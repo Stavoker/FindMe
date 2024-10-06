@@ -20,7 +20,7 @@ const UpdatePrompt = () => {
 
       setPost({
         prompt: data.prompt,
-        tag: data.tag,
+        tag: data.tag.join(" "),
       });
     };
 
@@ -38,7 +38,7 @@ const UpdatePrompt = () => {
         method: "PATCH",
         body: JSON.stringify({
           prompt: post.prompt,
-          tag: post.tag,
+          tag: post.tag.match(/#\w+/g) || [],
         }),
       });
 

@@ -1,35 +1,34 @@
 "use client";
 
-import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 
 import Profile from "@components/Profile";
 
 const MyProfile = () => {
   const router = useRouter();
-  const { data: session } = useSession();
-
   const [myPosts, setMyPosts] = useState([]);
+  const { user } = useUser();
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      const response = await fetch(`/api/users/${session?.user.id}/posts`);
-      const data = await response.json();
-
-      setMyPosts(data);
-    };
-
-    if (session?.user.id) fetchPosts();
-  }, [session?.user.id]);
+    if (user) {
+      const fetchPosts = async () => {
+        const response = await fetch(`/api/prompt/users/${user.id}/posts`);
+        const data = await response.json();
+        setMyPosts(data);
+      };
+      fetchPosts();
+    }
+  }, [user]);
 
   const handleEdit = (post) => {
-    router.push(`/update-prompt?id=${post._id}`);
+    router.push(`/update-prompt?id=${post._id.toString()}`);
   };
 
   const handleDelete = async (post) => {
     const hasConfirmed = confirm(
-      "Are you sure you want to delete this post?"
+        "Are you sure you want to delete this post?"
     );
 
     if (hasConfirmed) {
@@ -39,7 +38,6 @@ const MyProfile = () => {
         });
 
         const filteredPosts = myPosts.filter((item) => item._id !== post._id);
-
         setMyPosts(filteredPosts);
       } catch (error) {
         console.log(error);
@@ -48,13 +46,13 @@ const MyProfile = () => {
   };
 
   return (
-    <Profile
-      name='My'
-      desc='Welcome to your personalized profile page. Share your exceptional prompts and inspire others with the power of your imagination'
-      data={myPosts}
-      handleEdit={handleEdit}
-      handleDelete={handleDelete}
-    />
+      <Profile
+          name='My'
+          desc='Welcome to your personalized profile page. Share your exceptional prompts and inspire others with the power of your imagination'
+          data={myPosts}
+          handleEdit={handleEdit}
+          handleDelete={handleDelete}
+      />
   );
 };
 
