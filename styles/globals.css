@@ -38,11 +38,32 @@
     filter: invert(1);
 }
 
+.btn-dz {
+    padding: 8px 12px;
+    color: #fff;
+    font-size: 16px;
+    margin-bottom: 4%;
+    background-color: #111111;
+
+}
+
+.form_aboutme {
+    width: 100%;
+    border-radius: 0.5rem;
+    height: 200px;
+    margin-top: 8px;
+    padding: 12px;
+    font-size: 18px;
+    color: #6b7280;
+    outline: none;
+}
+
 .gradient {
     height: fit-content;
     z-index: 3;
     width: 100%;
     max-width: 640px;
+    
     background-image: radial-gradient(at 27% 37%,
             hsla(215, 98%, 61%, 1) 0px,
             transparent 0%),
@@ -241,7 +262,7 @@
     margin-left: auto;
     margin-right: auto;
     width: 100%;
-   
+
     display: flex;
     justify-content: center;
     align-items: center;
