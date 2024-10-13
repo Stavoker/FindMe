@@ -10,23 +10,23 @@ const UserSchema = new Schema({
         required: true,
     },
     NumberOfTokens: {
-        type: [String],
+        type: Number,
         required: true,
     },
     AboutMe: {
         type: String,
-        required: true,
+        required: false,
     },
     SocialLinks: {
         type: [String],
-        required: true,
+        required: false,
     },
     Resumes: {
     type: [{
         url: String,
         name: String
     }],
-    required: true,
+    required: false,
     },
 });
 
