@@ -1,7 +1,8 @@
 import { clerkClient } from '@clerk/clerk-sdk-node';
 
 export async function GET(req, { params }) {
-    const userId = params.id; // Get userId from params object
+
+    const userId = params.id;
 
     try {
         const user = await clerkClient.users.getUser(userId);
@@ -17,4 +18,5 @@ export async function GET(req, { params }) {
 
         return new Response(JSON.stringify({ error: 'Error fetching user' }), { status: 500 });
     }
+
 }

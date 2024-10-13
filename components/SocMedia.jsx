@@ -1,20 +1,84 @@
-// components/SocialLinks.js
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useUser } from "@clerk/nextjs";
 
 const SocialLinks = () => {
-    const [socialLinks, setSocialLinks] = useState([]); 
+    const [socialLinks, setSocialLinks] = useState([]);
+    const { user } = useUser();
 
-    const handleSocialLinkChange = (index, value) => {
+    useEffect(() => {
+        const fetchUser = async () => {
+            if (user) {
+                try {
+                    const response = await fetch(`/api/users/${user.id}/mongo`);
+                    const userData = await response.json();
+                    setSocialLinks(userData.SocialLinks || []);
+                } catch (error) {
+                    console.error("Error fetching user data:", error);
+                }
+            }
+        };
+        fetchUser().then(r => console.log(r));
+    }, [user]);
+
+    const handleSocialLinkChange = async (index, value) => {
         const updatedLinks = [...socialLinks];
         updatedLinks[index] = value;
         setSocialLinks(updatedLinks);
+
+        try {
+            const response = await fetch(`/api/users/${user.id}/social_links/${index}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ newLink: value }),
+            });
+
+            if (!response.ok) {
+                console.error('Failed to update social link');
+            }
+        } catch (error) {
+            console.error("Error updating social link:", error);
+        }
+
     };
 
-    const addSocialLink = () => {
-        setSocialLinks([...socialLinks, ""]); 
+    const addSocialLink = async () => {
+        const newLink = "";
+        setSocialLinks([...socialLinks, newLink]);
+        try {
+            const response = await fetch(`/api/users/${user.id}/social_links`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ newLink }),
+            });
+
+            if (!response.ok) {
+                console.error('Failed to add social link');
+            }
+        } catch (error) {
+            console.error("Error adding social link:", error);
+        }
     };
+
+    const deleteSocialLink = async (index) => {
+        setSocialLinks(socialLinks.filter((_, i) => i !== index));
+        try {
+            const response = await fetch(`/api/users/${user.id}/social_links/${index}`, {
+                method: 'DELETE',
+            });
+
+            if (!response.ok) {
+                console.error('Failed to delete social link');
+            }
+        } catch (error) {
+            console.error("Error deleting social link:", error);
+        }
+    }
 
     return (
         <div className='w-1/2 p-4 border rounded bg-gray-50'>
@@ -30,9 +94,7 @@ const SocialLinks = () => {
                         className='flex-1 border border-gray-300 p-2 rounded'
                     />
                     <button
-                        onClick={() => {
-                            setSocialLinks(socialLinks.filter((_, i) => i !== index)); 
-                        }}
+                        onClick={() => deleteSocialLink(index)}
                         className='ml-2 text-red-500 hover:underline'
                     >
                         Delete
