@@ -26,7 +26,7 @@ const UserSchema = new Schema({
         url: String,
         name: String
     }],
-    required: false,
+    required: false, _id: false
     },
 });
 

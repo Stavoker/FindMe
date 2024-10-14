@@ -1,29 +1,83 @@
-// components/ResumeUpload.js
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useUser } from "@clerk/nextjs";
 
 const ResumeUpload = () => {
-    const [resumes, setResumes] = useState([]); 
+    const [resumes, setResumes] = useState([]);
+    const { user } = useUser();
 
-    const handleFileChange = (e) => {
+    useEffect(() => {
+        const fetchUser = async () => {
+            if (user) {
+                try {
+                    const response = await fetch(`/api/users/${user.id}/mongo`);
+                    const userData = await response.json();
+                    setResumes(userData.Resumes || []);
+                } catch (error) {
+                    console.error("Error fetching user data:", error);
+                }
+            }
+        };
+        fetchUser().then(r => console.log(r));
+    }, [user]);
+
+    const handleFileChange = async (e) => {
+
         const file = e.target.files[0];
+        let newResume;
+
         if (file) {
-            const newResume = {
+            newResume = {
                 url: URL.createObjectURL(file),
                 name: file.name
             };
-            setResumes([...resumes, newResume]); 
+            setResumes([...resumes, newResume]);
         }
+
+        try {
+            const response = await fetch(`/api/users/${user.id}/resumes/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ newResume }),
+            });
+
+            if (!response.ok) {
+                console.error('Failed to update resume');
+            }
+        } catch (error) {
+            console.error('Error updating resume:', error);
+        }
+
+    };
+
+    const handleAddResume = () => {
+        document.getElementById("resumeInput").click();
     };
 
     const handleResumeClick = (url) => {
         window.open(url, '_blank'); 
     };
 
-    const handleDeleteResume = (name) => {
-        setResumes(resumes.filter(resume => resume.name !== name)); 
+    const handleDeleteResume = async (index) => {
+
+        setResumes(resumes.filter((_, i) => i !== index));
+
+        try {
+            const response = await fetch(`/api/users/${user.id}/resumes/${index}`, {
+                method: 'DELETE',
+            });
+
+            if (!response.ok) {
+                console.error('Failed to delete resume');
+            }
+        } catch (error) {
+            console.error('Error deleting resume:', error);
+        }
     };
+
 
     return (
         <div className='w-1/2 p-4 border border-gray-300 rounded bg-gray-50'>
@@ -41,6 +95,7 @@ const ResumeUpload = () => {
                 onChange={handleFileChange}
                 className='hidden' 
             />
+
             {resumes.map((resume, index) => (
                 <div key={index} className='flex items-center justify-between mt-2'>
                     <div
@@ -50,7 +105,7 @@ const ResumeUpload = () => {
                         <span className="text-[#000]">{resume.name}</span> {/* Show file name */}
                     </div>
                     <button
-                        onClick={() => handleDeleteResume(resume.name)}
+                        onClick={() => handleDeleteResume(index)}
                         className='ml-2 text-red-500 hover:underline'
                     >
                         Delete
@@ -59,7 +114,7 @@ const ResumeUpload = () => {
             ))}
 
 <div
-                onClick={() => document.getElementById("resumeInput").click()} // Click handler for file input
+                onClick={handleAddResume} // Click handler for file input
                 className='flex items-center justify-center border-dashed cursor-pointer mt-2'
                 style={{
                     width: "100%",  
