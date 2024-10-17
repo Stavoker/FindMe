@@ -9,7 +9,6 @@ const PromptCard = ({ post, handleEdit, handleDelete, handleTagClick }) => {
   const { user } = useUser(); // Get current user from Clerk
   const pathName = usePathname();
   const router = useRouter();
-
   const [copied, setCopied] = useState("");
   const [creatorUser, setCreatorUser] = useState(null);
 
@@ -31,11 +30,8 @@ const PromptCard = ({ post, handleEdit, handleDelete, handleTagClick }) => {
   }, [post.userId]);
 
   const handleProfileClick = () => {
-    if (post?.creator?._id === user?.id) return router.push("/profile");
-
-    if (post?.creator?._id) {
-      router.push(`/profile/${post.creator._id}?name=${post.creator.username}`);
-    }
+    if (post.userId === user.id) router.push("/profile");
+    else router.push(`/user-profile?userId=${post.userId}`);
   };
 
   const handleCopy = () => {
@@ -46,31 +42,31 @@ const PromptCard = ({ post, handleEdit, handleDelete, handleTagClick }) => {
 
   return (
       <div className="prompt_card">
+
         <div className="flex justify-between items-start gap-5">
-          <div
-              className="flex-1 flex justify-start items-center gap-3 cursor-pointer"
-              onClick={handleProfileClick}
-          >
-            {/* Use creatorUser's image if it's available */}
-            <div className="relative w-10 h-10 rounded-full overflow-hidden">
-              <Image
-                  src={creatorUser?.imageUrl || "/assets/icons/default-avatar.svg"}
-                  alt="user_image"
-                  layout="fill"
-                  objectFit="cover" // Ensures the image covers the container
-              />
-            </div>
+            <div
+                className="flex-1 flex justify-start items-center gap-3 cursor-pointer"
+                onClick={handleProfileClick}
+            >
+              {/* Use creatorUser's image if it's available */}
+              <div className="relative w-10 h-10 rounded-full overflow-hidden">
+                <Image
+                    src={creatorUser?.imageUrl || "/assets/icons/default-avatar.svg"}
+                    alt="user_image"
+                    layout="fill"
+                    objectFit="cover" // Ensures the image covers the container
+                />
+              </div>
 
-            <div className="flex flex-col">
-              <h3 className="font-satoshi font-semibold text-gray-900">
-                {creatorUser?.username || "Anonymous"} {/* Display post creator's username */}
-              </h3>
-              <p className="font-inter text-sm text-gray-500">
-                {creatorUser?.emailAddresses?.[0]?.emailAddress || "No info"} {/* Display post creator's email */}
-              </p>
+              <div className="flex flex-col">
+                <h3 className="font-satoshi font-semibold text-gray-900">
+                  {creatorUser?.username || "Anonymous"} {/* Display post creator's username */}
+                </h3>
+                <p className="font-inter text-sm text-gray-500">
+                  {creatorUser?.emailAddresses?.[0]?.emailAddress || "No info"} {/* Display post creator's email */}
+                </p>
+              </div>
             </div>
-          </div>
-
           <div className="copy_btn" onClick={handleCopy}>
             <Image
                 src={
@@ -83,6 +79,7 @@ const PromptCard = ({ post, handleEdit, handleDelete, handleTagClick }) => {
                 height={12}
             />
           </div>
+
         </div>
 
         <p className="my-4 font-satoshi text-sm text-gray-700">{post.prompt}</p>
