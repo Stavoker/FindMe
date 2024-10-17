@@ -49,7 +49,7 @@ const Uprofile = () => {
         <div>
             <UserProfile
                 userId={userId}
-                desc={`${creatorUser?.Username}'s profile. See their amazing prompts and contributions to the community.`}
+                username={creatorUser?.Username}
                 data={userPosts}
             />
         </div>

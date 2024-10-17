@@ -3,7 +3,7 @@ import PromptCard from "./PromptCard";
 import UserSocMedia from "./UserSocMedia";
 import UserResume from "./UserResume";
 
-const UserProfile = ({ userId, desc, data }) => {
+const UserProfile = ({ userId, username, data }) => {
     const [userInfo, setUserInfo] = useState("");
     const [resumes, setResumes] = useState([""]);
     const [socialLinks, setSocialLinks] = useState([""]); // Соцмережі
@@ -39,9 +39,9 @@ const UserProfile = ({ userId, desc, data }) => {
         <section className='w-full flex'>
             <div className='w-3/4 p-4'>
                 <h1 className='head_text text-left'>
-                    <span className='blue_gradient'>Profile</span>
+                    <span className='blue_gradient'>{username}</span>
                 </h1>
-                <p className='desc text-left mb-[4%]'>{desc}</p>
+                <p className='desc text-left mb-[4%]'>{username}'s profile. See their amazing prompts and contributions to the community.</p>
 
                 {userInfo.length > 0 && (
                 <label>
