@@ -16,7 +16,15 @@ const UserProfile = ({ userId, username, data }) => {
             const userData = await response.json();
             setUserInfo(userData.AboutMe || "");
             setSocialLinks(userData.SocialLinks);
-            setResumes(userData.Resumes);
+            const parsedResumes = userData.Resumes.map((resume) => {
+                try {
+                    return JSON.parse(resume);
+                } catch (error) {
+                    console.error('Error parsing resume:', error);
+                    return null;
+                }
+            }).filter(Boolean);
+            setResumes(parsedResumes || []);
             setIsLoading(false);
         } catch (error) {
             console.error("Error fetching user data:", error);

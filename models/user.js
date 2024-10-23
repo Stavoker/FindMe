@@ -23,8 +23,9 @@ const UserSchema = new Schema({
     },
     Resumes: {
     type: [{
-        url: String,
-        name: String
+        base64String: String,
+        name: String,
+        type: String
     }],
     required: false, _id: false
     },
